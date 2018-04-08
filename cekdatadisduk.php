@@ -69,16 +69,27 @@ function getdisdukdata($nik)
      
       }
     }
-  function kirimsms($nomor,$pesan)
+  function kirimsmsnusa($nomor,$pesan)
   {
     $client = new Client();
     $client->request('GET', 'http://api.nusasms.com/api/v3/sendsms/plain', [
     'query' => [
-                'user' => 'embungfatimah_api',
+                'user' => 'embungfatimah',
                 'password' => 'bismillah',
-                'SMSText' => $pesan,
+                'SMSText' => '',
                 'GSM' => $nomor,
                 'output' => 'json'
+              ]]);
+  }
+  function kirimsmszen($nomor,$pesan)
+  {
+    $client = new Client();
+    $client->request('GET', 'https://reguler.zenziva.net/apps/smsapi.php', [
+    'query' => [
+                'userkey' => '1sjhxi',
+                'passkey' => 'bismillah',
+                'pesan' => '',
+                'nohp' => $nomor
               ]]);
   }
   ?>

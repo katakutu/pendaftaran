@@ -140,7 +140,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
     }
     else
     {
-        kirimsms($_POST['no_tlp'],'Allahu Akbar!!!');
+        kirimsms($_POST['no_tlp']);
     }
 
     if(empty($_POST['email'])) {
