@@ -120,6 +120,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 	}
     } else {	
 
+    //query("START TRANRSACTION");
     $get_rm = query("SELECT DISTINCT * FROM set_no_rkm_medis");
     while ($row = fetch_array($get_rm)) {
                 $kdrm = $row['no_rkm_medis']; 
@@ -164,7 +165,11 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
     )"); 
 
     $RmUpdate = query("UPDATE set_no_rkm_medis SET no_rkm_medis=no_rkm_medis+1");
-    
+    /*if($get_rm and $insert and $RmUpdate){
+        query("COMMIT");
+    } else {
+        query("ROLLBACK");
+    }*/
 	if($insert) { 
 	    set_message('Selamat..!! Anda telah melakukan pendaftaran Pasien baru.'); 
 	    redirect('signup.php?action=success');
