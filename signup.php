@@ -11,6 +11,10 @@
 * Licence under GPL
 ***/ 
 
+/*
+comment dari radit
+*/
+
 ob_start();
 session_start();
 
