@@ -9,6 +9,7 @@
 * File : config.php
 * Description : Main config, function and helper
 * Licence under GPL
+ada tambahan dari laptop radit
 ***/
 
 if (preg_match ('/config.php/', basename($_SERVER['PHP_SELF']))) die ('Unable to access this script directly from browser!');
