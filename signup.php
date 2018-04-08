@@ -16,7 +16,6 @@ comment dari radit
 */
 require_once('config.php');
 require 'cekdatadisduk.php';
-
 ob_start();
 session_start();
 
@@ -107,22 +106,28 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 
     // cek database local
     if(!cekLocalData($_POST['no_ktp'])){
-        /* $errors[] = 'Cari di No KTP didatabase Dinas Pendudukan'; */
+         
         
         if(!getdisdukdata($_POST['no_ktp'])){
-            $errors[] = 'No KTP tidak ada didatabase Dinas Pendudukan';       
-        } else {
+            $errors[] = 'No KTP tidak ada didatabase Dinas Pendudukan';
+            //$errors[] = var_dump(getdisdukdata($_POST['no_ktp']));       
+        } /*else {
             $errors[] = 'No KTP ada didatabase Dinas Pendudukan';
-        } 
+            $errors[] = var_dump(getdisdukdata($_POST['no_ktp']));
+        } */
 
-        /*else {
+        else {
             $getLocalData = getLocalData($_POST['no_ktp']);
             if(!empty($_POST['tmpt_lahir'])){
-                if ($_POST['tmpt_lahir'] <> $getLocalDat ['tmpt_lhr']){
+                if (strtoupper( $_POST['tmpt_lahir']) != $getLocalData['TMPT_LHR']){
                     $errors[] = 'Data tidak sesusai';    
+                } else{
+                    $errors[] = 'Data sesusai'; 
                 }
-            }            
-        }*/
+            }          
+        }
+    } else {
+        $errors[] = 'No KTP ada didatabase local'; 
     }
 
     /*if(empty($_POST['nm_pasien'])) {

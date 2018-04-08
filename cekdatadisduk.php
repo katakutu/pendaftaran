@@ -1,10 +1,9 @@
 <?php
 
-  require_once('config.php');
+require_once('config.php');
 require 'vendor/autoload.php';
 use GuzzleHttp\Client;
-$client = new Client();
-$client = new GuzzleHttp\Client(['base_uri' => 'http://10.21.71.7:8000']);
+
 function cekLocalData($nik)
 {
     $sql = "SELECT NIK FROM disdukcapil WHERE NIK = '$nik' ";
@@ -27,6 +26,9 @@ function getLocalData($nik)
 
 function getdisdukdata($nik)
 {
+  ini_set('precision',20);
+  $client = new Client();
+  $client = new GuzzleHttp\Client(['base_uri' => 'http://10.21.71.7:8000']);
   $response = $client->request('POST', '/dukcapil/get_json/RSUDEF/BYNIK' , [
                     'headers' =>
                     [
@@ -43,7 +45,7 @@ function getdisdukdata($nik)
                     ] );
 
       $headers = $response->getHeaders();
-      $body =$response->getBody();
+      $body = $response->getBody()->getContents();
       $print=json_decode($body,true);
       //Output headers and body for debugging purposes
       $data = $print['content'][0];
@@ -61,7 +63,7 @@ function getdisdukdata($nik)
           $abc .= "'".$hasil."',";
         }
         $abc = substr($abc, 0, -1);
-         $query = 'insert into disdukcapil values('.$abc.')';
+        $query = 'insert into disdukcapil values('.$abc.')';
          query($query);
          return true;
      
