@@ -14,16 +14,14 @@
 /*
 comment dari radit
 */
-require_once('config.php');
-require 'cekdatadisduk.php';
 
 ob_start();
 session_start();
 
+require_once('config.php');
 
 if(SIGNUP !== 'ENABLE') { 
     redirect ('login.php');
-
 }
 
 ?>
@@ -100,42 +98,11 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
     if(empty($_POST['no_ktp'])) {
 	$errors[] = 'Kolom No KTP tidak boleh kosong';
     }
-
     if(nik_exits($_POST['no_ktp'])) {
 	$errors[] = 'No KTP telah terdaftar';
     }
-
-    // cek database local
-    if(!cekLocalData($_POST['no_ktp'])){
-        /* $errors[] = 'Cari di No KTP didatabase Dinas Pendudukan'; */
-        
-        if(!getdisdukdata($_POST['no_ktp'])){
-            $errors[] = 'No KTP tidak ada didatabase Dinas Pendudukan';       
-        } else {
-            $errors[] = 'No KTP ada didatabase Dinas Pendudukan';
-        } 
-
-        /*else {
-            $getLocalData = getLocalData($_POST['no_ktp']);
-            if(!empty($_POST['tmpt_lahir'])){
-                if ($_POST['tmpt_lahir'] <> $getLocalDat ['tmpt_lhr']){
-                    $errors[] = 'Data tidak sesusai';    
-                }
-            }            
-        }*/
-    }
-
-    /*if(empty($_POST['nm_pasien'])) {
+    if(empty($_POST['nm_pasien'])) {
 	$errors[] = 'Kolom nama tidak boleh kosong';
-    }*/
-
-    if(empty($_POST['tmpt_lahir'])) {
-    $errors[] = 'Kolom nama tempat lahir tidak boleh kosong';
-    }
-
-
-    if(empty($_POST['no_tlp'])) {
-    $errors[] = 'Kolom no handphone tidak boleh kosong';
     }
 
     if(empty($_POST['email'])) {
@@ -147,14 +114,13 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 
     }
 
-
     if(!empty($errors)) {
 	foreach($errors as $error) {
 	    echo validation_errors($error);
 	}
     } else {	
 
-   /* query("START TRANSACTION");
+    query("START TRANSACTION");
     $get_rm = query("SELECT DISTINCT * FROM set_no_rkm_medis");
     while ($row = fetch_array($get_rm)) {
                 $kdrm = $row['no_rkm_medis']; 
@@ -203,15 +169,12 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
         query("COMMIT");
     } else {
         query("ROLLBACK");
-    }*/
-
+    }
 	if($insert) { 
 	    set_message('Selamat..!! Anda telah melakukan pendaftaran Pasien baru.'); 
 	    redirect('signup.php?action=success');
         
-	} else {
-
-    }
+	}
 
     }
 	
@@ -246,7 +209,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                             <input type="text" class="form-control" name="no_ktp" placeholder="Nomor Induk Kependudukan" minlength="16" maxlength="16" required autofocus>
                         </div>
                     </div>
-                    <!--<div class="input-group">
+                    <div class="input-group">
                         <span class="input-group-addon">
                             <i class="material-icons">person</i>
                         </span>
@@ -254,7 +217,8 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                             <input type="text" class="form-control" name="nm_pasien" placeholder="Nama Lengkap" required autofocus>
                         </div>
                     </div>
-                     <div class="input-group">
+                    <!--
+                    <div class="input-group">
                         <span class="input-group-addon">
                             <i class="material-icons">event</i>
                         </span>
@@ -287,16 +251,16 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                             <input type="hidden" id="kd_kec" name="kd_kec">
                             <input type="text" id="nm_kec" class="form-control" name="nm_kec" placeholder="Kecamatan" required>
                         </div>
-                    </div> -->
+                    </div>-->
                     <div class="input-group">
                         <span class="input-group-addon">
                             <i class="material-icons" style="color:transparent;">done</i>
                         </span>
                         <div class="form-line">
-                            <input type="hidden" id="tmpt_lahir" name="tmpt_lahir">
-                            <input type="text" id="tmpt_lahir" class="form-control" name="tmpt_lahir" placeholder="Tempat Lahir" required>
+                            <input type="hidden" id="TmptLahir" name="TmptLahir">
+                            <input type="text" id="TmptLahir" class="form-control" name="TmptLahir" placeholder="Tempat Lahir" required>
                         </div>
-                    </div>
+                    </div> 
                     <div class="input-group">
                         <span class="input-group-addon">
                             <i class="material-icons">phone</i>
@@ -313,8 +277,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                             <input type="text" class="form-control" name="email" placeholder="Email Address" required>
                         </div>
                     </div>
-
-                    <!-- <div class="input-group">
+                    <div class="input-group">
                         <span class="input-group-addon">
                             <i class="material-icons">group</i>
                         </span>
@@ -324,7 +287,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                             <input name="jk" value="P" type="radio" id="radio_2" />
                             <label for="radio_2">Perempuan</label>
                         </div>
-                    </div> -->
+                    </div>
                     <div class="form-group"><br>
                     </div>
                     <div class="form-group">
