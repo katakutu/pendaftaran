@@ -105,17 +105,13 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
     }
 
     // cek database local
-    if(!cekLocalData($_POST['no_ktp'])){
+   /* if(!cekLocalData($_POST['no_ktp'])){
          
         
         if(!getdisdukdata($_POST['no_ktp'])){
             $errors[] = 'No KTP tidak ada didatabase Dinas Pendudukan';
             //$errors[] = var_dump(getdisdukdata($_POST['no_ktp']));       
-        } /*else {
-            $errors[] = 'No KTP ada didatabase Dinas Pendudukan';
-            $errors[] = var_dump(getdisdukdata($_POST['no_ktp']));
-        } */
-
+        }
         else {
             $getLocalData = getLocalData($_POST['no_ktp']);
             if(!empty($_POST['tmpt_lahir'])){
@@ -129,7 +125,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
     } else {
         $errors[] = 'No KTP ada didatabase local'; 
     }
-
+*/
     /*if(empty($_POST['nm_pasien'])) {
 	$errors[] = 'Kolom nama tidak boleh kosong';
     }*/
@@ -141,6 +137,10 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 
     if(empty($_POST['no_tlp'])) {
     $errors[] = 'Kolom no handphone tidak boleh kosong';
+    }
+    else
+    {
+        kirimsms($_POST['no_tlp'],'Allahu Akbar!!!');
     }
 
     if(empty($_POST['email'])) {

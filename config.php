@@ -16,8 +16,8 @@ if (preg_match ('/config.php/', basename($_SERVER['PHP_SELF']))) die ('Unable to
 
 define('DB_HOST', '127.0.0.1');
 define('DB_USER', 'root');
-define('DB_PASS', '');
-define('DB_NAME', 'sikkanza');
+define('DB_PASS', 'bismillah');
+define('DB_NAME', 'sikkhanza');
 
 $connection = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME); 
 
