@@ -74,13 +74,14 @@ function getdisdukdata($nik)
     $client = new Client();
     $client->request('GET', 'http://api.nusasms.com/api/v3/sendsms/plain', [
     'query' => [
-                'user' => 'embungfatimah',
+                'user' => 'embungfatimah_api',
                 'password' => 'bismillah',
-                'SMSText' => '',
+                'SMSText' => $pesan,
                 'GSM' => $nomor,
                 'output' => 'json'
               ]]);
   }
+
   function kirimsmszen($nomor,$pesan)
   {
     $client = new Client();
@@ -88,7 +89,7 @@ function getdisdukdata($nik)
     'query' => [
                 'userkey' => '1sjhxi',
                 'passkey' => 'bismillah',
-                'pesan' => '',
+                'pesan' => $pesan,
                 'nohp' => $nomor
               ]]);
   }

@@ -145,7 +145,7 @@ if (isset($_COOKIE['username']) && isset($_COOKIE['password'])) { redirect('inde
                             <i class="material-icons">lock</i>
                         </span>
                         <div class="form-line">
-                            <input type="password" class="form-control" name="password" placeholder="Nomor Induk Kependudukan" required>
+                            <input type="password" class="form-control" name="password" placeholder="Nomor Induk Kependudukan" minlength="16" maxlength="16" required>
                         </div>
                     </div>
                     <div class="row">
@@ -160,7 +160,7 @@ if (isset($_COOKIE['username']) && isset($_COOKIE['password'])) { redirect('inde
 
                     <?php if(SIGNUP == 'ENABLE') { ?>
                     <div class="m-t-25 m-b--5 align-center">
-                        <a href="signup.php">Belum terdaftar sebagai pasien?</a>
+                        <a href="Validasinik.php">Belum terdaftar sebagai pasien?</a>
                     </div>
                     <?php } ?>
                 </form>

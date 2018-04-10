@@ -1,4 +1,7 @@
-<?php include_once ('layout/header.php'); ?>
+<?php 
+include_once ('layout/header.php'); 
+require 'cekdatadisduk.php';
+?>
 
     <section class="content">
         <div class="container-fluid">
@@ -48,7 +51,8 @@
                                                 no_rkm_medis = '{$_SESSION['username']}'
                                         "));
                                         //@$_SESSION['pasien'][0] =$pasien['emailaddress'];
-                                        @$_SESSION['pasien'][0] =$pasien['pekerjaanpj'];
+                                        @$_SESSION['pasien'][0] =$pasien['emailaddress'];
+                                        @$_SESSION['pasien'][1] =$pasien['no_tlp'];
                                         ?>
                                        <input type="text" id="nama_lengkap" value="<?php echo $pasien['nm_pasien']; ?>" class="form-control" disabled>
                                     </div>
@@ -92,6 +96,7 @@
 			);
 			$hari=$day[$tentukan_hari];
 
+
 if($_SERVER['REQUEST_METHOD'] == "POST") { 
 
     //cek biar ga double datanya
@@ -108,6 +113,9 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 	    $errors[] = 'Dokter tujuan tidak boleh kosong';
         }
 
+        if ($_FILES["file"]["size"] > UKURAN_BERKAS) {
+        $errors[] = $_FILES["file"]["size"].' Ukuran berkas rujukan terlalu besar.';
+        }
 
         if(!empty($errors)) {
 	        foreach($errors as $error) {
@@ -140,6 +148,17 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
         list($Y, $m, $d) = explode('-', date('Y-m-d', strtotime($pasien[tgl_lahir])));
         $umurdaftar = $cY - $Y;
 
+        if($_FILES['file']['name']!='') {
+            $file='../berkasrawat/'.$photo_rujukan;
+            @unlink($file);
+            $tmp_name = $_FILES["file"]["tmp_name"];
+            $namefile = $_FILES["file"]["name"];
+            $ext = end(explode(".", $namefile));
+            $image_name = "rujukanfktp-".time().".".$ext;
+            move_uploaded_file($tmp_name,"../berkasrawat/pages/upload/".$image_name);
+            $lokasi_berkas = 'pages/upload/'.$image_name;
+        } 
+
 	    $insert = query("
             INSERT INTO reg_periksa 
             SET no_reg          = '$no_reg', 
@@ -161,6 +180,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                 sttsumur        = 'Th'
         ");
 
+        $insert_berkas = query("INSERT INTO berkas_digital_perawatan VALUES('$no_rawat', '001', '$lokasi_berkas')"); 
 
 	    if($insert) { 
 	        redirect("pendaftaran.php?action=selesai&no_rawat=$no_rawat");
@@ -291,8 +311,13 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 											    echo "<option value='$row[kd_pj]'>$row[png_jawab]</option>";
 											}?>
                                     </select>
+                                    <div id="admDivCheck" style="display">
+                                            <img id="image_upload_preview" width="200px" src="images/upload-rujukan.png" onclick="upload_rujukan()" style="cursor:pointer;" />
+                                            <input name="file" id="inputFile" type="file" style="display" />
+                                    </div>
                                     </div>
                                 </div>
+                                 
                                 <div class="form-group">
                                     <input type="checkbox" id="checkbox" name="checkbox" required>
                                     <label for="checkbox">Saya menyetujui ketentuan dan persyaratan</label>
@@ -328,54 +353,65 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
     LEFT JOIN pasien f ON a.no_rkm_medis = f.no_rkm_medis 
     WHERE a.no_rawat = '{$_GET['no_rawat']}'
     ")); 
-    ?>
 
-        <?php
-            if (filter_var(@$_SESSION['pasien'][0], FILTER_VALIDATE_EMAIL)) {
-                $to = @$_SESSION['pasien'][0];
-                $email_from = "no-replay@rsudef.batam.go.id";
+    if (filter_var(@$_SESSION['pasien'][0], FILTER_VALIDATE_EMAIL)) {
+        //$Pesan='NO. REG :'.$_GET['no_rawat']."\n";
 
-                $full_name = 'RSUD Embung Fatimah';
-                $from_mail = $full_name.'<'.$email_from.'>';
+        $to = @$_SESSION['pasien'][0];
+        $email_from = "no-replay@rsudef.batam.go.id";
 
+        $full_name = 'RSUD Embung Fatimah';
+        $from_mail = $full_name.'<'.$email_from.'>';
 
+        $subject = "Selamat Pendaftaran Online Anda Berhasil";
+        $message = "";
+        $message .= '
+                <p>Selamat sdr/i '.@$reg_det['nm_pasien'].' untuk pendaftaran Poliklinik. <br/>
+                Detil pendaftaran Online dibawah ini :<br/><br/>
 
-                $subject = "Selamat Pendaftaran Online Anda Berhasil";
-                $message = "";
-                $message .= '
-                        <p>Selamat sdr/i '.@$reg_det['nm_pasien'].' untuk pendaftaran Pasien Baru. <br/>
-                        Detil pendaftaran Online dibawah ini :<br/><br/>
+                <h3> No.Registrasi       : '.$_GET['no_rawat'].' </h3><br/>
+                No.RM               : '.@$_SESSION['username'].'<br/>
+                Nama Pasien         : '.$reg_det['nm_pasien'].'<br/>
+                Tanggal Berobat     : '.$reg_det['tgl_registrasi'].'<br/>
+                Jam Berobat         : '.$reg_det['jam_reg'].'<br/>
+                No. Urut Berobat    : '.$reg_det['no_reg'].'<br/>
+                Poliklinik Tujuan   : '.$reg_det['nm_poli'].'<br/>
+                Dokter Tujuan       : '.$reg_det['nm_dokter'].'<br/>
+                <br/>
+                <br/>
+                <strong>Terima Kasih Atas kepercayaan Anda.<br>
+                Bawalah kartu Berobat anda dan datang 1 jam sebelumnya.<br>
+                Harap tunjukan bukti ini kepada petugas pendaftaran kami, mohon tidak membalas email ini.</strong><br/>
+        ';
+        $from = $from_mail;
 
-                        <h5> No.Registrasi       : '.$_GET['no_rawat'].' </h5><br/>
-                        No.RM               : '.@$_SESSION['username'].'<br/>
-                        Nama Pasien         : '.$reg_det['nm_pasien'].'<br/>
-                        Tanggal Berobat     : '.$reg_det['tgl_registrasi'].'<br/>
-                        Jam Berobat         : '.$reg_det['jam_reg'].'<br/>
-                        No. Urut Berobat    : '.$reg_det['no_reg'].'<br/>
-                        Poliklinik Tujuan   : '.$reg_det['nm_poli'].'<br/>
-                        Dokter Tujuan       : '.$reg_det['nm_dokter'].'<br/>
-                        <br/>
-                        <br/>
-                        <strong>Terima Kasih Atas kepercayaan Anda.<br>
-                        Bawalah kartu Berobat anda dan datang 1 jam sebelumnya.<br>
-                        Harap tunjukan bukti ini kepada petugas pendaftaran kami, mohon tidak membalas email ini.</strong><br/>
-                ';
-                $from = $from_mail;
+        $headers = "" .
+                   "Reply-To:" . $from . "\r\n" .
+                   "From:" . $from . "\r\n" .
+                   "X-Mailer: PHP/" . phpversion();
+        $headers .= 'MIME-Version: 1.0' . "\r\n";
+        $headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";        
+        mail($to,$subject,$message,$headers);
 
-                $headers = "" .
-                           "Reply-To:" . $from . "\r\n" .
-                           "From:" . $from . "\r\n" .
-                           "X-Mailer: PHP/" . phpversion();
-                $headers .= 'MIME-Version: 1.0' . "\r\n";
-                $headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";        
-                mail($to,$subject,$message,$headers);
-            }
+        $Pesan='NO. REG :'.$_GET['no_rawat'];
+        $Pesan.='Poli :'.$reg_det['nm_poli']."\n";
+        $Pesan.='Dokter :'.$reg_det['nm_dokter'];
+
+        kirimsmszen(@$_SESSION['pasien'][1],$Pesan);
+    }
+
         ?>
             <!-- Basic Validation -->
             <div class="row clearfix">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="card">
                         <div class="body">
+                                <label for="email_address">No. Registrasi</label>
+                                <div class="form-group">
+                                    <div class="form-line">
+                                        <?php echo $_GET['no_rawat']; ?>
+                                    </div>
+                                </div>
                                 <label for="email_address">Nama Lengkap</label>
                                 <div class="form-group">
                                     <div class="form-line">

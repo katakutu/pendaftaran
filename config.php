@@ -16,8 +16,8 @@ if (preg_match ('/config.php/', basename($_SERVER['PHP_SELF']))) die ('Unable to
 
 define('DB_HOST', '127.0.0.1');
 define('DB_USER', 'root');
-define('DB_PASS', 'bismillah');
-define('DB_NAME', 'sikkhanza');
+define('DB_PASS', '');
+define('DB_NAME', 'sikkanza');
 
 $connection = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME); 
 
@@ -27,6 +27,9 @@ define('DIR', '');
 define('HARIDAFTAR', '3'); // Batasi hari pendaftaran 3 hari kedepan
 define('LIMITJAM', '23:39:00'); // Batasi jam pendaftaran
 define('SIGNUP', 'ENABLE'); // ENABLE atau DISABLE pendaftaran pasien baru
+define('KODE_BERKAS', '002'); // Kode katergori berkas digital
+define('UKURAN_BERKAS', '500000'); // Ukuran berkas digital dalam byte
+define('PENGADUAN', 'ENABLE'); // ENABLE atau DISABLE fitur pengaduan pasien. Lihat file includes/pengaduan.php untuk membuat tabel pengaduannya.
 
 function escape($string) {
     global $connection;
@@ -134,4 +137,53 @@ function nik_exits($no_ktp) {
     }
 }
 
+function cekkelurahan($kd) {
+    $sql = "SELECT * FROM kelurahan WHERE nm_kel = '$kd' ";
+    $result = query($sql);
+    $row = fetch_array($result);
 
+    if(num_rows($result) == 1) {
+        return $row['kd_kel'];
+    } else {
+        $sql = "INSERT INTO kelurahan set nm_kel='$kd'";
+        $result = query($sql);
+        $sql = "SELECT * FROM kelurahan WHERE nm_kel = '$kd' ";
+        $result = query($sql);
+        $row = fetch_array($result);
+        return $row['kd_kel'];
+    }
+}
+
+function cekkecamatan($kd) {
+    $sql = "SELECT * FROM kecamatan WHERE nm_kec = '$kd' ";
+    $result = query($sql);
+    $row = fetch_array($result);
+       
+    if(num_rows($result) == 1) {
+        return$row['kd_kec'];
+    } else {
+        $sql = "INSERT INTO kelurahan set nm_kec='$kd'";
+        $result = query($sql);
+        $sql = "SELECT * FROM kelurahan WHERE nm_kec = '$kd' ";
+        $result = query($sql);
+        $row = fetch_array($result);
+        return $row['kd_kec'];
+    }
+}
+
+function cekkabupaten($kd) {
+    $sql = "SELECT * FROM kabupaten WHERE nm_kab = '$kd' ";
+    $result = query($sql);
+    $row = fetch_array($result);
+       
+    if(num_rows($result) == 1) {
+        return$row['kd_kab'];
+    } else {
+        $sql = "INSERT INTO kabupaten set nm_kab='$kd'";
+        $result = query($sql);
+        $sql = "SELECT * FROM kabupaten WHERE nm_kab = '$kd' ";
+        $result = query($sql);
+        $row = fetch_array($result);
+        return $row['kd_kab'];
+    }
+}

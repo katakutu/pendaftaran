@@ -343,6 +343,76 @@
 			}]
 		});		
 	</script>
+    <script type="text/javascript">
+        function admSelectCheck(nameSelect)
+        {
+            if(nameSelect){
+                admOptionValue = document.getElementById("BPJS").value;
+                if(admOptionValue == nameSelect.value){
+                    document.getElementById("admDivCheck").style.display = "block";
+                }
+                else{
+                    document.getElementById("admDivCheck").style.display = "none";
+                }
+            }
+            else{
+                document.getElementById("admDivCheck").style.display = "none";
+            }
+        }
+
+        function readURL(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    $('#image_upload_preview').attr('src', e.target.result);
+                }
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        $("#inputFile").change(function () {
+            readURL(this);
+        });
+
+        function upload_rujukan(){
+        document.getElementById("inputFile").click();
+        }
+
+    </script>
+<script type="text/javascript">  
+ 
+function update()
+{
+    $.post("includes/pengaduan.php", {}, function(data){ $("#screen").val(data);});  
+ 
+    setTimeout('update()', 1000);
+}
+ 
+$(document).ready(
+ 
+    function() 
+    {
+        update();
+ 
+        $("#button").click(function() 
+        {         
+            $.post("includes/pengaduan.php",
+            { 
+                message: $("#message").val()
+            },
+            function(data) 
+            { 
+                $("#screen").val(data); 
+                $("#message").val("");
+            });
+        });
+    }
+);
+ 
+</script>
+
 
 </body>
 

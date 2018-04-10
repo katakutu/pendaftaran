@@ -62,6 +62,14 @@
                             <span>Informasi Kamar</span>
                         </a>
                     </li>
+                    <?php if(PENGADUAN == 'ENABLE') { ?>                    
+                    <li>
+                        <a href="pengaduan.php">
+                            <i class="material-icons">add_alert</i>
+                            <span>Pengaduan</span>
+                        </a>
+                    </li>
+                    <?php } ?>
                 </ul>
             </div>
             <!-- #Menu -->

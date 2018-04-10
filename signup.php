@@ -105,7 +105,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
     }
 
     // cek database local
-   /* if(!cekLocalData($_POST['no_ktp'])){
+    if(!cekLocalData($_POST['no_ktp'])){
          
         
         if(!getdisdukdata($_POST['no_ktp'])){
@@ -115,20 +115,68 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
         else {
             $getLocalData = getLocalData($_POST['no_ktp']);
             if(!empty($_POST['tmpt_lahir'])){
-                if (strtoupper( $_POST['tmpt_lahir']) != $getLocalData['TMPT_LHR']){
+                if (strtoupper($_POST['tmpt_lahir']) != $getLocalData['TMPT_LHR']){
                     $errors[] = 'Data tidak sesusai';    
                 } else{
-                    $errors[] = 'Data sesusai'; 
+                   $namapasien=$getLocalData['NAMA_LGKP'];
+                   $noktp=$getLocalData['NIK'];
+                   if($getLocalData['JENIS_KLMIN']=='LAKI-LAKI'){
+                        $jk='L';
+                    } else{
+                        $jk='P';
+                    }
+                    $tmptlahir=$getLocalData['TMPT_LHR']; 
+                    $tgllahir=$getLocalData['TGL_LHR']; 
+                    $alamat=$getLocalData['ALAMAT'];
+                    $namaibu=$getLocalData['NAMA_LGKP_IBU'];
+                    $goldarah=$getLocalData['GOL_DARAH'];
+                    $jndkerja=$getLocalData['JENIS_PKRJN'];
+                    $sttnikah=$getLocalData['STATUS_KAWIN'];
+                    $agama=$getLocalData['AGAMA']; 
+                    $notlp=$_POST['no_tlp']; 
+                    $kd_kel=$getLocalData['NO_KEL'];
+                    $nm_kel=$getLocalData['KEL_NAME'];
+                    $kd_kec=$getLocalData['NO_KEC'];
+                    $nm_kec=$getLocalData['KEC_NAME'];
+                    $kd_kab=$getLocalData['NO_KAB']; 
+                    $nm_kab=$getLocalData['KAB_NAME'];
+                   // $errors[] =$namapasien.','.$noktp.','.$jk.','.$tgllahir.','.$alamat.','.$notlp.','.$kd_kel.','.$kd_kec.','.$kd_kab;
                 }
             }          
         }
     } else {
-        $errors[] = 'No KTP ada didatabase local'; 
+        // $errors[] = 'No KTP ada didatabase local';
+        $getLocalData = getLocalData($_POST['no_ktp']); 
+        if(!empty($_POST['tmpt_lahir'])){
+            if (strtoupper($_POST['tmpt_lahir']) != $getLocalData['TMPT_LHR']){
+                $errors[] = 'Data tidak sesusai';    
+            } else{
+                $namapasien=$getLocalData['NAMA_LGKP'];
+                $noktp=$getLocalData['NIK'];
+                if($getLocalData['JENIS_KLMIN']=='LAKI-LAKI'){
+                    $jk='L';
+                } else{
+                    $jk='P';
+                }
+                $tmptlahir=$getLocalData['TMPT_LHR']; 
+                $tgllahir=$getLocalData['TGL_LHR']; 
+                $alamat=$getLocalData['ALAMAT'];
+                $namaibu=$getLocalData['NAMA_LGKP_IBU'];
+                $goldarah=$getLocalData['GOL_DARAH'];
+                $jndkerja=$getLocalData['JENIS_PKRJN'];
+                $sttnikah=$getLocalData['STATUS_KAWIN'];
+                $agama=$getLocalData['AGAMA']; 
+                $notlp=$_POST['no_tlp']; 
+                $kd_kel=$getLocalData['NO_KEL'];
+                $nm_kel=$getLocalData['KEL_NAME'];
+                $kd_kec=$getLocalData['NO_KEC'];
+                $nm_kec=$getLocalData['KEC_NAME'];
+                $kd_kab=$getLocalData['NO_KAB']; 
+                $nm_kab=$getLocalData['KAB_NAME']; 
+                // $errors[] =$namapasien.','.$noktp.','.$jk.','.$tgllahir.','.$alamat.','.$notlp.','.$kd_kel.','.$kd_kec.','.$kd_kab;
+            }
+        }
     }
-*/
-    /*if(empty($_POST['nm_pasien'])) {
-	$errors[] = 'Kolom nama tidak boleh kosong';
-    }*/
 
     if(empty($_POST['tmpt_lahir'])) {
     $errors[] = 'Kolom nama tempat lahir tidak boleh kosong';
@@ -138,11 +186,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
     if(empty($_POST['no_tlp'])) {
     $errors[] = 'Kolom no handphone tidak boleh kosong';
     }
-    else
-    {
-        kirimsms($_POST['no_tlp']);
-    }
-
+    
     if(empty($_POST['email'])) {
     $errors[] = 'Kolom email tidak boleh kosong';
     } else {
@@ -159,7 +203,11 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 	}
     } else {	
 
-   /* query("START TRANSACTION");
+    $kd_kel=cekkelurahan($nm_kel);
+    $kd_kab =cekkabupaten($nm_kab);
+    $kd_kec=cekkecamatan($nm_kec);
+
+    query("START TRANSACTION");
     $get_rm = query("SELECT DISTINCT * FROM set_no_rkm_medis");
     while ($row = fetch_array($get_rm)) {
                 $kdrm = $row['no_rkm_medis']; 
@@ -168,22 +216,23 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
     $no_rm_next = 'WEB';
     $no_rm_next .= sprintf('%06s', ($lastRM + 1));
     @$_SESSION['daftar'][0] =$no_rm_next;
-    @$_SESSION['daftar'][1] =$_POST['no_ktp'];
-    @$_SESSION['daftar'][2] =$_POST['nm_pasien'];
+    @$_SESSION['daftar'][1] =$noktp;
+    @$_SESSION['daftar'][2] =$namapasien;
     @$_SESSION['daftar'][3] =$_POST['email'];
+    @$_SESSION['daftar'][4] =$_POST['no_tlp'];
 	$insert = query("INSERT INTO pasien VALUES(
         '$no_rm_next', 
-        '{$_POST['nm_pasien']}', 
-        '{$_POST['no_ktp']}', 
-        '{$_POST['jk']}', 
-        '-', 
-        '{$_POST['tgl_lahir']}', 
-        '-', 
-        '{$_POST['alamat']}', 
-        '-', 
-        '-', 
-        '-', 
-        '-', 
+        '$namapasien', 
+        '$noktp', 
+        '$jk', 
+        '$tmptlahir', 
+        '$tgllahir', 
+        '$namaibu', 
+        '$alamat', 
+        '$goldarah', 
+        '$jndkerja', 
+        '$sttnikah', 
+        '$agama', 
         '$date', 
         '{$_POST['no_tlp']}', 
         '-', 
@@ -192,9 +241,9 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
         '-', 
         'A01', 
         '-', 
-        '{$_POST['kd_kel']}', 
-        '{$_POST['kd_kec']}', 
-        '{$_POST['kd_kab']}', 
+        '$kd_kel', 
+        '$kd_kec', 
+        '$kd_kab', 
         '-', 
         '-', 
         '-', 
@@ -208,7 +257,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
         query("COMMIT");
     } else {
         query("ROLLBACK");
-    }*/
+    }
 
 	if($insert) { 
 	    set_message('Selamat..!! Anda telah melakukan pendaftaran Pasien baru.'); 
@@ -373,7 +422,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                     password (No.KTP) :'.@$_SESSION['daftar'][1].'<br/><br/>
                     untuk login silahkan kunjungi web site : http://rsudef.batam.go.id <br/>
                     <br/>
-                    <strong>Harap tunjukan bukti ini kepada petugas pendaftaran kami, mohon tidak membalas email ini. Terima kasih  </strong><br/>
+                    <strong>Terima kasih</strong><br/>
             ';
             $from = $from_mail;
 
@@ -384,6 +433,13 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
             $headers .= 'MIME-Version: 1.0' . "\r\n";
             $headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";        
             mail($to,$subject,$message,$headers);
+
+            $Pesan='User Name (No.RM) :'.@$_SESSION['daftar'][0]."\n";
+            $Pesan.='password (No.KTP) :'.@$_SESSION['daftar'][1];
+
+            kirimsmszen(@$_SESSION['daftar'][4],$Pesan);
+
+            //kirimsmsnusa(@$_SESSION['daftar'][4],$Pesan);
         ?>
         <div class="card">         
             <div class="body text-center">
@@ -393,7 +449,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
             <a href="login.php"><button type="button" class="btn bg-green btn-lg waves-effect">LOGIN</button></a>
             </div>
         </div>
-
+    
     <?php } ?>
 
     </div>
